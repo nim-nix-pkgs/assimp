@@ -1,0 +1,27 @@
+{
+  description = ''Wrapper for the assimp library'';
+
+  inputs.flakeNimbleLib.owner = "riinr";
+  inputs.flakeNimbleLib.ref   = "master";
+  inputs.flakeNimbleLib.repo  = "nim-flakes-lib";
+  inputs.flakeNimbleLib.type  = "github";
+  inputs.flakeNimbleLib.inputs.nixpkgs.follows = "nixpkgs";
+  
+  inputs."assimp-master".dir   = "master";
+  inputs."assimp-master".owner = "nim-nix-pkgs";
+  inputs."assimp-master".ref   = "master";
+  inputs."assimp-master".repo  = "assimp";
+  inputs."assimp-master".type  = "github";
+  inputs."assimp-master".inputs.nixpkgs.follows = "nixpkgs";
+  inputs."assimp-master".inputs.flakeNimbleLib.follows = "flakeNimbleLib";
+  
+  outputs = { self, nixpkgs, flakeNimbleLib, ...}@inputs:
+  let 
+    lib  = flakeNimbleLib.lib;
+    args = ["self" "nixpkgs" "flakeNimbleLib"];
+  in lib.mkProjectOutput {
+    inherit self nixpkgs;
+    meta = builtins.fromJSON (builtins.readFile ./meta.json);
+    refs = builtins.removeAttrs inputs args;
+  };
+}
